@@ -117,7 +117,7 @@ class GraphQL
                         ],
                         'resolve' => fn($rootValue, array $args) => $rootValue['prefix'] . $args['message'],
                     ],
-                    'productDetails' => [
+                   'productDetails' => [
                         'type' => Type::listOf(
                             new ObjectType([
                                 'name' => 'ProductDetail',

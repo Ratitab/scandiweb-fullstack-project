@@ -128,7 +128,7 @@ class Modal extends Component {
   render() {
     const { isOpen, cart } = this.props;
 
-    // console.log("KARTT",cart[0].attributes)
+    console.log("KARTT",cart)
 
     const totalPrice = this.calculateTotalPrice();
     if (!isOpen) return null;
@@ -161,9 +161,12 @@ class Modal extends Component {
           <div>${totalPrice.toFixed(2)}</div>
         </div>
         <div>
+          {}
           <button 
           onClick={this.handlePlaceOrder}
-          className="bg-green-500 font-semibold text-sm w-full hover:bg-green-600 text-white py-3 px-4">
+          disabled={cart.length === 0}
+          className={`font-semibold text-sm w-full py-3 px-4 
+            ${cart.length === 0 ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-green-500 hover:bg-green-600 text-white"}`}>
             PLACE ORDER
           </button>
         </div>

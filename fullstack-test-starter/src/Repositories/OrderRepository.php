@@ -2,18 +2,12 @@
 
 namespace App\Repositories;
 
+use App\Model\AbstractProduct;
+use App\Services\DatabaseService;
 use PDO;
 use RuntimeException;
 
-class OrderRepository {
-    private $db;
-
-    public function __construct(PDO $db)
-    {
-        $this->db = $db;
-    }
-
-
+class OrderRepository  extends AbstractRepository{
     public function findProductPriceById($productId) {
         $query = "select amount from prices where product_id in (:productId)";
         $stmt = $this->db->prepare($query);

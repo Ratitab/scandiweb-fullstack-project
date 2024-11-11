@@ -3,6 +3,7 @@ import ProductCard from "../../views/components/productCard";
 import { QueryClient } from "react-query";
 import GetMainProductsService from "../../hooks/getMainProducts";
 
+
 const queryClient = new QueryClient();
 
 class AllMainProducts extends Component {
@@ -36,6 +37,7 @@ class AllMainProducts extends Component {
     }
   };
 
+
   render() {
     const { category } = this.props
     console.log("allproduct", this.state.allProducts);
@@ -48,12 +50,13 @@ class AllMainProducts extends Component {
         </h1>
         <div className="grid py-16 grid-cols-3 gap-10">
           {this.state.allProducts.map((product) => {
+            console.log("PRICEE", product.price)
             return (
               <ProductCard
                 key = {product.id}
                 id={product.id}
                 name={product.name}
-                price={product.price}
+                price={product.price.amount}
                 inStock={product.in_stock}
                 category={product.category_name}
                 image={product.image_gallery[0]}
