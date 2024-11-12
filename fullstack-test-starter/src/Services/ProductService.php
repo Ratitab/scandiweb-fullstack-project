@@ -40,8 +40,7 @@ class ProductService {
             'description' => $rows[0]['description'],
             'brand' => $rows[0]['brand'],
             'category_name' => $rows[0]['category_name'],
-            'image_gallery' => explode(',', $rows[0]['image_gallery']),
-            'attributes' => [],
+            'image_gallery' => explode('|', $rows[0]['image_gallery']),
             'price' => [
                 'amount' => $rows[0]['price_amount'],
                 'currency_label' => $rows[0]['currency_label'],
@@ -50,25 +49,25 @@ class ProductService {
             ];
 
 
-        $product = new Product(
-            $rows[0]['id'],
-            $rows[0]['name'],
-            $rows[0]['in_stock'],
-            $rows[0]['description'],
-            $rows[0]['brand'],
-            $rows[0]['category_name'],
-            explode('|', $rows[0]['image_gallery']),
-            $this->createAttributes($rows),
-            [
-                'amount' => $rows[0]['price_amount'],
-                'currency_label' => $rows[0]['currency_label'],
-                'currency_symbol' => $rows[0]['currency_symbol']
-            ]
-        );
-        error_log("Fetched result: " );
+        // $product = new Product(
+        //     $rows[0]['id'],
+        //     $rows[0]['name'],
+        //     $rows[0]['in_stock'],
+        //     $rows[0]['description'],
+        //     $rows[0]['brand'],
+        //     $rows[0]['category_name'],
+        //     explode('|', $rows[0]['image_gallery']),
+        //     $this->createAttributes($rows),
+        //     [
+        //         'amount' => $rows[0]['price_amount'],
+        //         'currency_label' => $rows[0]['currency_label'],
+        //         'currency_symbol' => $rows[0]['currency_symbol']
+        //     ]
+        // );
+        // error_log("Fetched result: " );
       
                 error_log("Fetched result: " . json_encode($result));
-                return $product->getDetails();
+                return $result;
         } catch(\PDOException $e) {
             throw new RuntimeException("error fetching PDP detials: " . $e->getMessage());
         }
@@ -111,6 +110,11 @@ class ProductService {
         return $data;
     }
     
+    public function resolveAttributes($id) {
+        $rows = $this->productRepository->fetchAttributesByProductId($id);
+        $attributes = $this->createAttributes($rows);
+        return $attributes;
+    }
 
     private function createAttributes($rows)
     {

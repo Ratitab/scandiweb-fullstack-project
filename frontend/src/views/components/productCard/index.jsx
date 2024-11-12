@@ -31,7 +31,7 @@ class ProductCard extends Component {
 
   handleQuickShop = async (event) => {
     event.stopPropagation();
-    const { id, addToCart, name, image, quantity} = this.props;
+    const { id, addToCart, name, image, quantity, toggleCart} = this.props;
 
     const data = await this.fetchAttributesQuickShop(id);
     const defaultAttributes = {};
@@ -60,7 +60,7 @@ class ProductCard extends Component {
         quantity: quantity,
         price: price,
     });
-
+    // toggleCart()
     console.log("Added product with default attributes to cart");
 };
 

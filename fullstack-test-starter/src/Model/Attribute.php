@@ -13,12 +13,15 @@ class Attribute extends AbstractAttribute {
 
     public function getAttributeItems()
     {
-        return $this->items;
+        return array_map(function($item) {
+            return [
+                'display_value' => $item['display_value'],
+                'value' => $item['value']
+            ];
+        }, $this->items);
     }
 
     public function toArray() {
-        return array_merge(parent::toArray(), [
-            'items' => $this->items
-        ]);
+        return parent::toArray();
     }
 }

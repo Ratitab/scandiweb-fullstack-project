@@ -56,7 +56,7 @@ class AllMainProducts extends Component {
                 key = {product.id}
                 id={product.id}
                 name={product.name}
-                price={product.price.amount}
+                price={product.price}
                 inStock={product.in_stock}
                 category={product.category_name}
                 image={product.image_gallery[0]}

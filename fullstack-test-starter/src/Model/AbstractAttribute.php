@@ -26,7 +26,8 @@ abstract class AbstractAttribute {
     public function toArray() {
         return [
             'name' => $this->name,
-            'type' => $this->type
+            'type' => $this->type,
+            'items' => $this->getAttributeItems(),
         ];
     }
 }

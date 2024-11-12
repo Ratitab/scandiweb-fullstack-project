@@ -28,7 +28,7 @@ class GraphQL
         try {
             error_log("AK raxdena");
             $data = $this->productService->fetchPDPDetails($id);
-
+            $data['attributes'] = $this->productService->resolveAttributes($id);
             
 
             return $data;
