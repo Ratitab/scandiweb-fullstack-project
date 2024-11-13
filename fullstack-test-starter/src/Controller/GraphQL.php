@@ -18,15 +18,45 @@ class GraphQL
 {
     private $productService;
 
+    // Shared types to avoid duplication
+    private $attributeItemType;
+    private $attributeType;
+    private $priceType;
+
     public function __construct(ProductService $productService)
     {
         $this->productService = $productService;
-        error_log('ProductService injected into GraphQL class');
+
+        $this->attributeItemType = new ObjectType([
+            'name' => 'AttributeItem',
+            'fields' => [
+                'display_value' => Type::string(),
+                'value' => Type::string(),
+            ],
+        ]);
+
+        $this->attributeType = new ObjectType([
+            'name' => 'Attribute',
+            'fields' => [
+                'name' => Type::string(),
+                'type' => Type::string(),
+                'items' => Type::listOf($this->attributeItemType),
+            ],
+        ]);
+
+        $this->priceType = new ObjectType([
+            'name' => 'Price',
+            'fields' => [
+                'amount' => Type::float(),
+                'currency_label' => Type::string(),
+                'currency_symbol' => Type::string(),
+            ],
+        ]);
     }
 
     public function resolvePDPDetails($id) {
         try {
-            error_log("AK raxdena");
+            // error_log("AK raxdena");
             $data = $this->productService->fetchPDPDetails($id);
             $data['attributes'] = $this->productService->resolveAttributes($id);
             
@@ -52,6 +82,8 @@ class GraphQL
                 }
                 return $product;
             }, $products);
+
+            // error_log("PRICES " . json_encode($resolvedProducts['price']));
     
             return $resolvedProducts;
         } catch (Exception $e) {
@@ -72,11 +104,11 @@ class GraphQL
     public function resolvePlaceOrder($root, $args) {
 
         try {
-            error_log("LIJBI RESOLVERSHI SHEMOVIDES ES NABOZARI MERE SAD WAVA");
+            // error_log("LIJBI RESOLVERSHI SHEMOVIDES ES NABOZARI MERE SAD WAVA")
             $orderItems = $args['orderItems'];
             // $price = $args['totalPrice'];
             $orderId = str_pad(mt_rand(0,999999), 6, '0', STR_PAD_LEFT);
-            error_log("Received data: " . json_encode($orderItems)  );
+            // error_log("Received data: " . json_encode($orderItems)  );
 
             $this->productService->insertOrder($orderId,544.22, $orderItems);
             return  [
@@ -84,14 +116,8 @@ class GraphQL
                 'status' => "SUCCESS",
                 'message' => 'order placed successfully'
             ];
-            error_log("Order placed successfully with Order ID: ARIKAAA" . $orderId);
-    
-            // Log each item for clarity
-            foreach ($orderItems as $item) {
-                error_log("Product ID: " . $item['productId']);
-                error_log("Quantity: " . $item['quantity']);
-                error_log("Attributes: " . json_encode($item['selectedAttributes']));
-            }
+            // error_log("Order placed successfully with Order ID: ARIKAAA" . $orderId);
+
     
             return ;
         } catch (Exception $e) {
@@ -99,6 +125,16 @@ class GraphQL
             error_log("Error in resolvePlaceOrder: " . $e->getMessage());
             throw new RuntimeException("Error placing order: " . $e->getMessage());
         }
+    }
+
+    public function resolveFetchAttributes($id) {
+        try {
+            $attributes = $this->productService->resolveAttributes($id);
+            // error_log("ATTRIBUTEs" . json_encode($attributes));
+            return $attributes;
+        } catch (Exception $e) {
+            throw new RuntimeException("Error fetching atributes" . $e->getMessage());
+        } 
     }
     
 
@@ -129,7 +165,7 @@ class GraphQL
                                     'brand' => Type::string(),
                                     'category_name' => Type::string(),
                                     'image_gallery' => Type::listOf(Type::string()),
-                                    'price' => Type::float(),
+                                    'price' => Type::string(),
                                     'currency_label' => Type::string(),
                                     'currency_symbol' => Type::string(),
                                 ],
@@ -148,6 +184,15 @@ class GraphQL
                         ),
                         'resolve' => [$this, 'resolveCategories'], // Ensure this is inside the 'categories' field
                     ],
+                    'attributes' => [
+                            'type' => Type::listOf($this->attributeType),
+                            'args' => [
+                                    'id' => ['type' => Type::nonNull(Type::string())], // Add `id` argument
+                                ],
+                            'resolve' => function ($root, $args) {
+                                    return $this->resolveFetchAttributes($args['id']);
+                                },
+                            ],
                     'PDP' => [
                         'type' => new ObjectType([
                             'name' => 'PDP',
@@ -159,32 +204,8 @@ class GraphQL
                                 'brand' => Type::string(),
                                 'category_name' => Type::string(),
                                 'image_gallery' => Type::listOf(Type::string()),
-                                'attributes' => Type::listOf(
-                                    new ObjectType([
-                                        'name' => 'Attribute',
-                                        'fields' => [
-                                            'name' => Type::string(),
-                                            'type' => Type::string(),
-                                            'items' => Type::listOf(
-                                                new ObjectType([
-                                                    'name' => 'AttributeItem',
-                                                    'fields' => [
-                                                        'display_value' => Type::string(),
-                                                        'value' => Type::string(),
-                                                    ],
-                                                ])
-                                            ),
-                                        ],
-                                    ])
-                                ),
-                                'price' => new ObjectType([
-                                    'name' => 'Price',
-                                    'fields' => [
-                                        'amount' => Type::float(),
-                                        'currency_label' => Type::string(),
-                                        'currency_symbol' => Type::string(),
-                                    ],
-                                ]),
+                                'attributes' => Type::listOf($this->attributeType),
+                                'price' => $this->priceType,
                             ],
                         ]),
                         'args' => [
@@ -197,6 +218,24 @@ class GraphQL
                 ],
             ]);
 
+
+            $selectedAttributeInputType = new InputObjectType([
+                'name' => 'SelectedAttributeInput',
+                'fields' => [
+                    'name' => Type::string(),
+                    'value' => Type::string(),
+                ],
+            ]);
+            
+            $orderItemInputType = new InputObjectType([
+                'name' => 'OrderItemInput',
+                'fields' => [
+                    'productId' => Type::string(),
+                    'quantity' => Type::int(),
+                    'selectedAttributes' => Type::listOf($selectedAttributeInputType),
+                ],
+            ]);
+            
             $mutationType = new ObjectType([
                 'name' => 'Mutation',
                 'fields' => [
@@ -207,33 +246,16 @@ class GraphQL
                                 'orderId' => Type::string(),
                                 'status' => Type::string(),
                                 'message' => Type::string(),
-                            ]
+                            ],
                         ]),
                         'args' => [
-                            'orderItems' => Type::listOf(
-                                new InputObjectType([
-                                    'name' => 'OrderItemInput',
-                                    'fields' => [
-                                        'productId' => Type::string(),
-                                        'quantity' => Type::int(),
-                                        'selectedAttributes' => Type::listOf(
-                                            new InputObjectType([
-                                                'name' => 'SelectedAttributeInput',
-                                                'fields' => [
-                                                    'name' => Type::string(),
-                                                    'value' => Type::string(),
-                                                ]
-                                            ])
-                                        ),
-                                    ],
-                                ])
-                            ),
+                            'orderItems' => Type::listOf($orderItemInputType), 
                         ],
                         'resolve' => [$this, 'resolvePlaceOrder'],
                     ],
                 ],
             ]);
-            
+
 
             $schema = new Schema([
                 'query' => $queryType,
@@ -241,7 +263,7 @@ class GraphQL
             ]);
 
             $rawInput = file_get_contents('php://input');
-            error_log('Raw input: ' . $rawInput);
+            // error_log('Raw input: ' . $rawInput);
             if ($rawInput === false) {
                 throw new RuntimeException('Failed to get php://input');
             }

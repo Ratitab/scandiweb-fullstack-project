@@ -83,35 +83,51 @@ class DefaultHeader extends Component {
 
   render() {
     const { activeUnderlinePosition, underlineWidth, categories } = this.state;
-    const { cart, isCartOpen, } = this.props; 
+    const { cart, isCartOpen } = this.props;
+
+    const currentPath = this.props.location.pathname;
 
     return (
-      <div className="md:py-0 min-h-[78px] md:h-20 w-full m-auto relative">
+      <div className="min-h-[78px] md:h-20 w-full m-auto relative">
         <header className="bg-white relative z-30 min-h-[62px]">
-          <nav ref={this.navRef} className="container mx-auto h-[78px] flex justify-between items-center">
-            <ul className="flex space-x-12">
-              {categories.map((category) => (
-                <li key={category.name}>
-                  <NavLink
-                    to={`${category.name.toLowerCase()}`}
-                    className={({ isActive }) =>
-                      `relative pb-1 ${isActive ? "text-green-500" : "text-gray-800"} hover:text-green-600`
-                    }
-                  >
-                    {category.name.toUpperCase()}
-                  </NavLink>
-                </li>
-              ))}
+          <nav
+            ref={this.navRef}
+            className="container mx-auto h-[78px] flex justify-between items-center px-4"
+          >
+            <ul className="flex space-x-6 md:space-x-12">
+              {categories.map((category) => {
+                const categoryPath = `/${category.name.toLowerCase()}`;
+                const isActive = currentPath === categoryPath;
+                return (
+                  <li key={category.name}>
+                    <NavLink
+                      to={`${category.name.toLowerCase()}`}
+                      className={({ isActive }) =>
+                        `relative pb-1 text-sm md:text-base ${
+                          isActive ? "text-green-500" : "text-gray-800"
+                        } hover:text-green-600`
+                      }
+                      data-testid={isActive ? "active-category-link" : "category-link"}
+                    >
+                      {category.name.toUpperCase()}
+                    </NavLink>
+                  </li>
+                );
+              })}
             </ul>
             <NavLink to="/all" className="cursor-pointer">
-              <CompanyLogo />
+              <CompanyLogo className="w-16 md:w-20" />
             </NavLink>
             <div className="relative items-center">
-              <div onClick={this.handleCartClick} className="cursor-pointer size-8">
+              <div
+                onClick={this.handleCartClick}
+                className="cursor-pointer size-6 md:size-8"
+                data-testid="cart-btn"
+              >
                 <CartIcon />
                 {cart.length > 0 && (
-                  <div className="absolute bottom-5 right-0 bg-black text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  {cart.length}  
+                  <div className="absolute bottom-5 right-0 bg-black text-white text-xs rounded-full w-4 h-4 md:w-5 md:h-5 flex items-center justify-center">
+                    {cart.length}
                   </div>
                 )}
               </div>
@@ -120,13 +136,12 @@ class DefaultHeader extends Component {
                   <div
                     className="modal-overlay fixed left-0 right-0 bg-black opacity-50 z-1"
                     style={{
-                      top: "78px", 
-                      height: `calc(100vh - 78px)`, 
+                      top: "78px",
+                      height: `calc(100vh - 78px)`
                     }}
-                    data-testid='cart-btn'
-                    onClick={this.handleOverlayClick} 
+                    onClick={this.handleOverlayClick}
                   ></div>
-                  <Modal isOpen={isCartOpen} cart={cart} /> 
+                  <Modal isOpen={isCartOpen} cart={cart} />
                 </>
               )}
             </div>
@@ -135,7 +150,7 @@ class DefaultHeader extends Component {
             className="absolute bottom-0 h-0.5 bg-green-400 transition-all duration-300"
             style={{
               left: `${activeUnderlinePosition}px`,
-              width: `${underlineWidth}px`,
+              width: `${underlineWidth}px`
             }}
           />
         </header>
@@ -143,7 +158,6 @@ class DefaultHeader extends Component {
     );
   }
 }
-
 
 function withLocation(Component) {
   return function WrapperComponent(props) {

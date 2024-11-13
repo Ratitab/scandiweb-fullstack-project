@@ -32,7 +32,6 @@ class ProductService {
         try {
         $rows = $this->productRepository->fetchPDPDetails($id);
         
-        // Initialize the result
         $result = [
             'id' => $rows[0]['id'],
             'name' => $rows[0]['name'],
@@ -47,26 +46,7 @@ class ProductService {
                 'currency_symbol' => $rows[0]['currency_symbol']
             ]
             ];
-
-
-        // $product = new Product(
-        //     $rows[0]['id'],
-        //     $rows[0]['name'],
-        //     $rows[0]['in_stock'],
-        //     $rows[0]['description'],
-        //     $rows[0]['brand'],
-        //     $rows[0]['category_name'],
-        //     explode('|', $rows[0]['image_gallery']),
-        //     $this->createAttributes($rows),
-        //     [
-        //         'amount' => $rows[0]['price_amount'],
-        //         'currency_label' => $rows[0]['currency_label'],
-        //         'currency_symbol' => $rows[0]['currency_symbol']
-        //     ]
-        // );
-        // error_log("Fetched result: " );
       
-                error_log("Fetched result: " . json_encode($result));
                 return $result;
         } catch(\PDOException $e) {
             throw new RuntimeException("error fetching PDP detials: " . $e->getMessage());
@@ -89,24 +69,25 @@ class ProductService {
             $this->orderRepository->insertOrder($orderId,$totalPrice,$data);
 
             return true;
-        } catch (PDOException $err) {
-            echo "SHEMOIDAA??";            
-            error_log("Error inserting order: " . $err->getMessage());
+        } catch (PDOException $err) {        
             throw new RuntimeException("Error insering in ordews " . $err->getMessage());
         }
     }
  
     public function fetchAllCategories() {
         $data = $this->categoryRepository->fetchAllCategories();
-        // error_log("CATEGORIES" . json_encode($data));
+
         return $data;
     }
 
     public function fetchProductDetails() {
         $data = $this->productRepository->fetchProductDetails();
+        // error_log("PRICEBIIIIIIIIIIIIIIIIII" . json_encode($data));
+        return $data;
+    }
 
-        
-        // error_log('Fetched product details: ' . json_encode($data));
+    public function fetchAttributesQuickShop ($id) {
+        $data = $this->productRepository->fetchAttributesByProductId($id);
         return $data;
     }
     
@@ -120,7 +101,6 @@ class ProductService {
     {
         $attributes = [];
         foreach ($rows as $row) {
-            error_log("Processing row for attributes: " . json_encode($row));
             if ($row['attribute_name']) {
                 $items = [];
                 $attributeItems = explode(',', $row['attribute_items']);
@@ -144,8 +124,6 @@ class ProductService {
             }
         }
     
-        // Log the generated attributes for debugging
-        error_log("Generated attributes: " . json_encode($attributes));
     
         return $attributes;
     }

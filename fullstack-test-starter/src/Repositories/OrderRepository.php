@@ -16,7 +16,6 @@ class OrderRepository  extends AbstractRepository{
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$result) {
-            error_log("ARIKA DEVIWVIT");
             throw new RuntimeException("ARIKA DEVIWVIT");
         }
 

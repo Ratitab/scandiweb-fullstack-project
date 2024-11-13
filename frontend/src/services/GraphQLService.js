@@ -10,7 +10,6 @@ class GraphQLService {
 
     async request(query, variables = {}) {
         try {
-            console.log("CHEMEVIDAAA")
             const data = await this.client.request(query, variables)
             return data
         } catch (error) {

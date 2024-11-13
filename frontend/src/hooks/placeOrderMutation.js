@@ -18,12 +18,10 @@ class PlaceOrder {
     // const variables = {orderItems}
 
     try {
-        console.log("OrderPlaces succesfully", variables)
         const response = await graphqlServiceInstance.request(mutation, variables)
-        console.log("OrderPlaces succesfully", response)
         return response.placeOrder
     } catch (err) {
-        // console.log(err, "failed to olace oreder")
+        console.log(err, "failed to olace oreder")
         throw new Error("FAILLDEEE")
     }
   }

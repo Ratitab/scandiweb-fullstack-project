@@ -13,7 +13,6 @@ class CategoryService {
 
         try {
             const response = await GraphQLService.request(query)
-            console.log(response.categories)
             return response.categories
         } catch (err ) {
             console.log("GRAPHQL ERROR GETCHING",err)

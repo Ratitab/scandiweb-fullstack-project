@@ -17,11 +17,11 @@ class ProductCard extends Component {
 
   fetchAttributesQuickShop = async (productId) => {
     try {
-        const result = await queryClient.fetchQuery(['PDP', productId], () => 
-            GetQuickShop.getQuickShop(productId)
-        );
-        console.log("AGIAA ATRIBUTEBI SHEIRGREEEE", result.PDP);
-        return result.PDP;
+      const result = await queryClient.fetchQuery(
+        ["fetchAttributes", productId],
+        () => GetQuickShop.getQuickShop(productId)
+      );
+        return result;
     } catch (err) {
         console.log("ERORIA");
         throw new Error("ERORIA AKANE", err);
@@ -31,14 +31,13 @@ class ProductCard extends Component {
 
   handleQuickShop = async (event) => {
     event.stopPropagation();
-    const { id, addToCart, name, image, quantity, toggleCart} = this.props;
+    const { id, addToCart, name, image, quantity, toggleCart, price} = this.props;
 
     const data = await this.fetchAttributesQuickShop(id);
     const defaultAttributes = {};
     const attributes = data.attributes
-    const price = data.price
+    // const price = data.price
 
-    console.log("PRODUCT ATTRIBUTES", attributes);
 
     // Populate defaultAttributes with full object structure for each attribute item
     attributes.forEach((attribute) => {
@@ -66,10 +65,12 @@ class ProductCard extends Component {
 
   render() {
     const { image, name, price, inStock } = this.props;
+    const kebabCaseName = name?.replace(/\s+/g, '-').toLowerCase()
     return (
       <div
         className="bg-white rounded-lg p-4 cursor-pointer group hover:shadow-lg transition-shadow duration-300"
         onClick={this.handleClickProductCardClick}
+        data-testid={`product-${kebabCaseName}`}
       >
         <div className="relative">
           <img

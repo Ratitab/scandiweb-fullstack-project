@@ -15,7 +15,6 @@ class CartItem extends Component {
 
   incrementCounter = () => {
     const {incrementQuantity, id, selectedAttributes} = this.props
-    console.log(id)
     incrementQuantity(id, selectedAttributes)
   };
 

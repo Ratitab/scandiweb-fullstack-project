@@ -28,12 +28,12 @@ export class CartProvider extends Component {
                     item.id === product.id &&
                     JSON.stringify(item.selectedAttributes) === JSON.stringify(product.selectedAttributes)
             )
-            console.log("[ITEM INDEX]", existingItemIndex)
+            // console.log("[ITEM INDEX]", existingItemIndex)
 
             if (existingItemIndex > -1) {
                 const updatedCart = [...prevState.cart]
                 updatedCart[existingItemIndex].quantity += 1
-                console.log("adding to qquantity", updatedCart)
+                // console.log("adding to qquantity", updatedCart)
                 return {cart: updatedCart}
             } else {
                 return {cart: [...prevState.cart, {...product, quantity: 1}]}
@@ -60,7 +60,7 @@ export class CartProvider extends Component {
 
         this.setState((prevState) => {
             const cart = prevState.cart.map((item) => {
-                console.log("SHAMAIDA", item.id, productId)
+
                 if (item.id === productId && this.areAttributesEqual(item.selectedAttributes, selectedAttributes)) {
                     
                     return {...item, quantity: item.quantity + 1}

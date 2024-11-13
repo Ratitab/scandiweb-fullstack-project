@@ -31,11 +31,9 @@ class GetPDP {
       `;
 
     try {
-        // console.log("STARTED")
+
         const variables = { id }
         const response = await  graphqlServiceInstance.request(query,variables)
-        // console.log("ENDED")
-        // console.log("MAINPRODUCT RESPONSE RAW: ", response)
         
         return response
     } catch (err) {

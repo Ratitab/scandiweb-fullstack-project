@@ -55,13 +55,11 @@ class RouteHandler
 
 
                 if (is_array($handler)) {
-                    error_log('Handler found, instantiating controller');
                     $controller = new $handler[0]($this->productService);
                     $method = $handler[1];
 
                     if (method_exists($controller, $method)) {
                         header('Content-Type: application/json');
-                        error_log('Controller method found, executing...');
                         echo $controller->$method($vars);
                     } else {
                         http_response_code(500);

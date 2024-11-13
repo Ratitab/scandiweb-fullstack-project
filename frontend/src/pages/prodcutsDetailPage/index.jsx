@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import GetPDP from "../../hooks/getPDP";
 import { QueryClient } from "react-query";
-// import Modal from "../../views/components/cartListItems/cartListModal";
 import vector from "../../assets/png/Vector.png";
 import { withCart } from "../../context/cartContext";
 
@@ -31,7 +30,6 @@ class ProductDetailPage extends Component {
       const result = await queryClient.fetchQuery("PDP", () =>
         GetPDP.getPDP(productID)
       );
-      console.log("ESAA EGGG", result.PDP);
       const PDPResult = result.PDP;
       this.setState({ PDPDetails: PDPResult });
     } catch (err) {
@@ -59,7 +57,7 @@ class ProductDetailPage extends Component {
 
   handleAddToCart = () => {
     const { PDPDetails, selectedAttributes } = this.state;
-    const { addToCart, toggleCart, cart } = this.props;
+    const { addToCart, toggleCart } = this.props;
 
     const selectedProduct = {
       id: PDPDetails.id,
@@ -71,15 +69,14 @@ class ProductDetailPage extends Component {
     };
 
     addToCart(selectedProduct);
-    // console.log("KARTT",cart)
     toggleCart();
   };
 
   isAddToCartDisabled = () => {
     const { PDPDetails, selectedAttributes } = this.state;
 
-    if(!PDPDetails.in_stock) {
-      return true
+    if (!PDPDetails.in_stock) {
+      return true;
     }
 
     return (
@@ -89,18 +86,13 @@ class ProductDetailPage extends Component {
   };
 
   render() {
-    const {
-      PDPDetails,
-      selectedAttributes,
-      currentImageIndex,
-      cart,
-      isCartOpen,
-    } = this.state;
-    console.log("INSTOCKK", PDPDetails.in_stock);
+    const { PDPDetails, selectedAttributes, currentImageIndex } = this.state;
+
     return (
-      <div className="container mx-auto py-20 flex">
-        <div className="flex gap-4 w-1/2">
-          <div className="flex flex-col space-y-2 overflow-y-auto max-h-96">
+      <div className="container mx-auto py-10 px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row gap-8">
+        {/* Gallery */}
+        <div className="lg:w-1/2 flex gap-4" data-testid="product-gallery">
+          <div className="flex flex-col gap-4 max-h-96 overflow-y-auto">
             {PDPDetails.image_gallery &&
               PDPDetails.image_gallery.map((image, index) => (
                 <img
@@ -117,18 +109,16 @@ class ProductDetailPage extends Component {
               ))}
           </div>
 
-          <div className="relative flex-1 flex justify-center items-center">
+          <div className="relative flex-1 flex justify-center items-center max-h-96">
             <button
               onClick={() =>
                 this.setState((prevState) => ({
                   currentImageIndex:
-                    (prevState.currentImageIndex -
-                      1 +
-                      PDPDetails.image_gallery.length) %
+                    (prevState.currentImageIndex - 1 + PDPDetails.image_gallery.length) %
                     PDPDetails.image_gallery.length,
                 }))
               }
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white w-10 h-10 flex items-center justify-center hover:bg-opacity-75"
+              className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white w-10 h-10 flex items-center justify-center hover:bg-opacity-75"
             >
               <img src={vector} alt="Previous" />
             </button>
@@ -140,30 +130,37 @@ class ProductDetailPage extends Component {
                   : ""
               }
               alt={PDPDetails.name}
-              className="w-full h-full object-contain max-h-96"
+              className="w-full h-full object-contain"
             />
 
             <button
               onClick={() =>
                 this.setState((prevState) => ({
                   currentImageIndex:
-                    (prevState.currentImageIndex + 1) %
-                    PDPDetails.image_gallery.length,
+                    (prevState.currentImageIndex + 1) % PDPDetails.image_gallery.length,
                 }))
               }
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white w-10 h-10 flex items-center justify-center hover:bg-opacity-75"
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white w-10 h-10 flex items-center justify-center hover:bg-opacity-75"
             >
               <img src={vector} alt="Next" className="transform rotate-180" />
             </button>
           </div>
         </div>
 
-        <div className="flex flex-col px-12 w-1/2">
-          <h1 className="text-3xl font-bold">{PDPDetails.name}</h1>
+        {/* Product Details */}
+        <div className="flex flex-col lg:w-1/2">
+          <h1 className="text-2xl md:text-3xl font-bold">{PDPDetails.name}</h1>
 
+          {/* Attribute Containers */}
           {PDPDetails.attributes &&
             PDPDetails.attributes.map((attribute) => (
-              <div key={attribute.name} className="mt-6">
+              <div
+                key={attribute.name}
+                className="mt-6"
+                data-testid={`product-attribute-${attribute.name
+                  .replace(/\s+/g, "-")
+                  .toLowerCase()}`}
+              >
                 <h4 className="font-semibold tracking-wide">
                   {attribute.name.toUpperCase()}:
                 </h4>
@@ -185,6 +182,10 @@ class ProductDetailPage extends Component {
                               backgroundColor: item.value,
                               width: "24px",
                               height: "24px",
+                              border:
+                                selectedAttributes[attribute.name]?.value ===
+                                item.value ? '2px solid green'
+                                :'1px solid gray'
                             }
                           : {}
                       }
@@ -196,27 +197,31 @@ class ProductDetailPage extends Component {
               </div>
             ))}
 
-          <div className="mt-8">
+          {/* Price */}
+          <div className="mt-6">
             <h4 className="font-semibold tracking-wide">PRICE:</h4>
-            <p className="font-bold mt-4 text-xl">
+            <p className="font-bold mt-2 text-xl">
               {PDPDetails.price?.currency_symbol}
               {PDPDetails.price?.amount}
             </p>
           </div>
 
+          {/* Add to Cart Button */}
           <button
-            className={`text-sm w-96 py-3 px-4 mt-4 ${
+            className={`text-sm w-full lg:w-96 py-3 px-4 mt-4 ${
               this.isAddToCartDisabled()
                 ? "bg-gray-300 cursor-not-allowed"
                 : "bg-green-400 hover:bg-green-500 text-white"
             }`}
             onClick={this.handleAddToCart}
             disabled={this.isAddToCartDisabled()}
+            data-testid="add-to-cart"
           >
             Add to Cart
           </button>
 
-          <div className="mt-4">
+          {/* Product Description */}
+          <div className="mt-4" data-testid="product-description">
             <p>{PDPDetails.description}</p>
           </div>
         </div>
