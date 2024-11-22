@@ -15,19 +15,33 @@ class ProductService {
     private $orderRepository;
     private $productRepository;
     private $categoryRepository;
+    private RedisService $redisService;
 
     public function __construct(
         ProductRepository $productRepository,
         OrderRepository $orderRepository,
-        CategoryRepository $categoryRepository
+        CategoryRepository $categoryRepository,
+        RedisService $redisService
     ) {
         $this->productRepository = $productRepository;
         $this->orderRepository = $orderRepository;
         $this->categoryRepository = $categoryRepository;
+        $this->redisService = $redisService;
     }
 
+    public function cacheProductDetails (int $productId, array $details) : void {
+        $cacheKey = "product:$productId";
+        $this->redisService->set($cacheKey, json_encode($details), 3600);
+    }
 
     public function fetchPDPDetails($id) {
+        $cacheKey = "PDP:$id";
+        $cachedData = $this->redisService->get($cacheKey);
+
+        if ($cachedData) {
+            error_log("CACHE HIT for key: $cacheKey");
+            return json_decode($cachedData, true);
+        }
 
         try {
         $rows = $this->productRepository->fetchPDPDetails($id);
@@ -46,8 +60,10 @@ class ProductService {
                 'currency_symbol' => $rows[0]['currency_symbol']
             ]
             ];
-      
-                return $result;
+            
+            $result['attributes'] = $this->resolveAttributes($id);
+            $this->redisService->set($cacheKey, json_encode($result), 3600);
+            return $result;
         } catch(\PDOException $e) {
             throw new RuntimeException("error fetching PDP detials: " . $e->getMessage());
         }
@@ -75,14 +91,38 @@ class ProductService {
     }
  
     public function fetchAllCategories() {
+        $cacheKey = "categories";
+        $cachedData = $this->redisService->get($cacheKey);
+
+        if ($cachedData) {
+            error_log("CACHE HIT for key: $cacheKey");
+            return json_decode($cachedData, true);
+        }
+
         $data = $this->categoryRepository->fetchAllCategories();
+        error_log("THIS IS COMING FROM not cache");
+        $this->redisService->set($cacheKey, json_encode($data), 3600);
 
         return $data;
     }
 
     public function fetchProductDetails() {
+        $cacheKey = "products:all";
+        $cachedData = $this->redisService->get($cacheKey);
+        
+
+        if ($cachedData) {
+            error_log("CACHE HIT for key: $cacheKey");
+            return json_decode($cachedData, true);
+        } else {
+            error_log("CACHE MISS for key: $cacheKey");
+        }
+
+
         $data = $this->productRepository->fetchProductDetails();
-        // error_log("PRICEBIIIIIIIIIIIIIIIIII" . json_encode($data));
+        error_log("THIS IS COMING FROM not cache");
+        $this->redisService->set($cacheKey, json_encode($data), 3600);
+
         return $data;
     }
 

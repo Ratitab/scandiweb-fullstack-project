@@ -1,0 +1,72 @@
+version: '3.8'
+
+networks:
+  scandiweb_network:
+    driver: bridge
+
+services:
+  backend:
+    container_name: backend
+    build:
+      context: ./fullstack-test-starter
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8000"
+    volumes:
+      - ./fullstack-test-starter:/var/www/html
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=scandiweb_ecommerce
+      - DB_USER=root
+      - DB_PASS=xutjerA@0098
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - mysql
+      - redis
+
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    volumes: 
+      - ./frontend:/app
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: xutjerA@0098
+      MYSQL_DATABASE: scandiweb_ecommerce
+    volumes:
+      - /var/lib/mysql:/var/lib/mysql # Bind your host's MySQL data directory
+
+  redis:
+    image: redis:7
+    container_name: redis
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+  
+  nginx:
+    container_name: nginx
+    build:
+      context: /home/rati/Desktop/nginx
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - frontend
+      - backend
+    volumes:
+      - ./frontend/build:/usr/share/nginx/html
+      - /home/rati/Desktop/nginx/nginx.conf:/etc/nginx/nginx.conf
+
+volumes:
+  mysql_data:
