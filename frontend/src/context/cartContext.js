@@ -1,5 +1,4 @@
-import { Children, Component, createContext, useContext, useEffect, useState } from "react"
-import { isError } from "react-query"
+import { Component, createContext, useContext, } from "react"
 
 const CartContext = createContext()
 
@@ -22,6 +21,12 @@ export class CartProvider extends Component {
     }
 
     addToCart = (product) => {
+
+        const normalizedPrice = 
+            typeof product.price === "object" && product.price !== null
+                ? product.price
+                : { amount: parseFloat(product.price), currency_label: "USD", currency_symbol: "$" };
+
         this.setState((prevState) => {
             const existingItemIndex = prevState.cart.findIndex(
                 (item) =>
@@ -36,7 +41,7 @@ export class CartProvider extends Component {
                 // console.log("adding to qquantity", updatedCart)
                 return {cart: updatedCart}
             } else {
-                return {cart: [...prevState.cart, {...product, quantity: 1}]}
+                return {cart: [...prevState.cart, {...product, price: normalizedPrice ,quantity: 1}]}
             }
         })
     }

@@ -1,7 +1,5 @@
-version: '3.8'
-
 networks:
-  scandiweb_network:
+  scandiweb_fullstack_default:
     driver: bridge
 
 services:
@@ -10,8 +8,6 @@ services:
     build:
       context: ./fullstack-test-starter
       dockerfile: Dockerfile
-    ports:
-      - "8080:8000"
     volumes:
       - ./fullstack-test-starter:/var/www/html
     environment:
@@ -25,48 +21,52 @@ services:
     depends_on:
       - mysql
       - redis
+    networks:
+      - scandiweb_fullstack_default
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: xutjerA@0098
+      MYSQL_DATABASE: scandiweb_ecommerce
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./nginx/sql:/docker-entrypoint-initdb.d 
+    command: ["sh", "-c", "docker-entrypoint.sh mysqld & sleep 10 && sh /docker-entrypoint-initdb.d/scripts/init-database.sh & while true; do sleep 86400 && sh /docker-entrypoint-initdb.d/scripts/export-orders.sh; done"]
+    networks:
+      - scandiweb_fullstack_default
+
+  redis:
+    image: redis:7
+    container_name: redis
+    command: ["redis-server", "--appendonly", "yes"]
+    networks:
+      - scandiweb_fullstack_default
 
   frontend:
     container_name: frontend
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    ports:
-      - "3000:80"
-    volumes: 
-      - ./frontend:/app
+    networks:
+      - scandiweb_fullstack_default
+    # Tag the built image for reuse in Nginx
+    image: frontend-build:latest
 
-  mysql:
-    image: mysql:8.0
-    container_name: mysql
-    ports:
-      - "3306:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: xutjerA@0098
-      MYSQL_DATABASE: scandiweb_ecommerce
-    volumes:
-      - /var/lib/mysql:/var/lib/mysql # Bind your host's MySQL data directory
-
-  redis:
-    image: redis:7
-    container_name: redis
-    ports:
-      - "6379:6379"
-    command: ["redis-server", "--appendonly", "yes"]
-  
   nginx:
     container_name: nginx
     build:
-      context: /home/rati/Desktop/nginx
+      context: ./nginx
       dockerfile: Dockerfile
     ports:
       - "80:80"
+      - "8000:8000"
     depends_on:
       - frontend
       - backend
-    volumes:
-      - ./frontend/build:/usr/share/nginx/html
-      - /home/rati/Desktop/nginx/nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - scandiweb_fullstack_default
 
 volumes:
   mysql_data:

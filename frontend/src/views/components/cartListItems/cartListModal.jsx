@@ -31,10 +31,10 @@ class Modal extends Component {
   calculateTotalPrice() {
     const { cart } = this.props;
     return cart.reduce((accumulator, product) => {
-      const priceAmount = typeof product.price === "object" ? product.price?.amount : product.price || 0;
-      return accumulator + priceAmount * product.quantity;
+        const priceAmount = product.price?.amount || 0;
+        return accumulator + priceAmount * product.quantity;
     }, 0);
-  }
+}
 
   render() {
     const { isOpen, cart } = this.props;

@@ -25,7 +25,7 @@ class RouteHandler
 
     public function dispatch($method, $uri)
     {
-        header("Access-Control-Allow-Origin: http://localhost:3000"); // Allow only this origin
+        header("Access-Control-Allow-Origin: *"); // Allow only this origin
     header("Access-Control-Allow-Methods: GET, POST, OPTIONS"); // Allow specific methods
     header("Access-Control-Allow-Headers: Content-Type, Authorization"); // Allow specific headers
     header("Access-Control-Allow-Credentials: true"); // Allow credentials (if needed)

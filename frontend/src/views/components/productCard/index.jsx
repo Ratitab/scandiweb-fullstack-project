@@ -5,7 +5,7 @@ import { withCart } from "../../../context/cartContext";
 import GetQuickShop from "../../../hooks/getQuickShop";
 import { QueryClient } from "react-query";
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient();
 
 class ProductCard extends Component {
   handleClickProductCardClick = () => {
@@ -21,51 +21,62 @@ class ProductCard extends Component {
         ["fetchAttributes", productId],
         () => GetQuickShop.getQuickShop(productId)
       );
-        return result;
+      return result;
     } catch (err) {
-        console.log("ERORIA");
-        throw new Error("ERORIA AKANE", err);
+      console.log("ERORIA");
+      throw new Error("ERORIA AKANE", err);
     }
-}
-
+  };
 
   handleQuickShop = async (event) => {
     event.stopPropagation();
-    const { id, addToCart, name, image, quantity, toggleCart, price} = this.props;
+    const { id, addToCart, name, image, quantity, price } = this.props;
 
     const data = await this.fetchAttributesQuickShop(id);
     const defaultAttributes = {};
-    const attributes = data.attributes
+    const attributes = data.attributes;
     // const price = data.price
-
 
     // Populate defaultAttributes with full object structure for each attribute item
     attributes.forEach((attribute) => {
       if (attribute.items && attribute.items.length > 0) {
-          defaultAttributes[attribute.name] = {
-              display_value: attribute.items[0].display_value,
-              value: attribute.items[0].value,
-          };
+        defaultAttributes[attribute.name] = {
+          display_value: attribute.items[0].display_value,
+          value: attribute.items[0].value,
+        };
       }
-  });
+    });
 
-    // Add the product to the cart with default attributes
+    console.log(price);
+
+    // const productInCart = cart.find((item) => item.id === id);
+    // const price = productInCart?.price || 0;
+
+    const normalizedPrice =
+      typeof price === "object"
+        ? price
+        : {
+            amount: parseFloat(price),
+            currency_label: "USD",
+            currency_symbol: "$",
+          };
+
     addToCart({
-        attributes: attributes,
-        id:  id ,  // Assuming `id` represents your product here
-        selectedAttributes: defaultAttributes,
-        name: name,
-        image: image,
-        quantity: quantity,
-        price: price,
+      attributes: attributes,
+      id: id, // Assuming `id` represents your product here
+      selectedAttributes: defaultAttributes,
+      name: name,
+      image: image,
+      quantity: quantity,
+      price: normalizedPrice,
     });
     // toggleCart()
     console.log("Added product with default attributes to cart");
-};
+  };
 
   render() {
     const { image, name, price, inStock } = this.props;
-    const kebabCaseName = name?.replace(/\s+/g, '-').toLowerCase()
+    const kebabCaseName = name?.replace(/\s+/g, "-").toLowerCase();
     return (
       <div
         className="bg-white rounded-lg p-4 cursor-pointer group hover:shadow-lg transition-shadow duration-300"
