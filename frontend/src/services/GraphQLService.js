@@ -13,8 +13,7 @@ class GraphQLService {
             const data = await this.client.request(query, variables)
             return data
         } catch (error) {
-            console.log("GRAPH QL AGARAA: ", error.message)
-            throw new Error("Graphql request failed")
+            throw new Error("Graphql request failed", error)
         }
     }
 }

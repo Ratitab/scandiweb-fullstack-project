@@ -9,7 +9,6 @@ import AllMainProducts from "./pages/allMainProducts";
 import AllClothesProducts from "./pages/clothes";
 import ProductDetailPage from "./pages/prodcutsDetailPage";
 import AllTechProducts from "./pages/tech";
-import AllProductPage from "./pages/allProducts";
 import { CartProvider } from "./context/cartContext";
 
 
@@ -19,10 +18,10 @@ function App() {
     <CartProvider>
 
 
-      <DefaultHeader /> {/* This will always show */}
+      <DefaultHeader />
       <Routes>
         <Route path="/" element={<Navigate to="/all" replace />} />
-        <Route path="/all" element={<AllProductPage  />} />
+        <Route path="/all" element={<AllMainProducts  />} />
         <Route path="/clothes" element={<AllClothesProducts />} />
         <Route path="/tech" element={<AllTechProducts />} />
         <Route path="/all/:id" element={<ProductDetailPage />} />

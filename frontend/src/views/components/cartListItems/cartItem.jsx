@@ -47,7 +47,6 @@ class CartItem extends Component {
   render() {
     const { name, price, quantity,image, attributes,cart } = this.props;
     const { selectedAttributes } = this.state;
-    console.log("[CART  attributes IN CARITEM]",quantity)
     return (
       <div className="flex my-10 justify-between  h-full">
         <div className="flex justify-between w-full mr-4">

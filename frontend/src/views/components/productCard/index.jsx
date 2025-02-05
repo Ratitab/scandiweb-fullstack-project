@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { useNavigate } from "react-router-dom";
 import quickShopIcon from "../../../assets/png/quickShop.png";
 import { withCart } from "../../../context/cartContext";
-import GetQuickShop from "../../../hooks/getQuickShop";
+import GetQuickShopService from "../../../services/GetQuickShopService";
 import { QueryClient } from "react-query";
 
 const queryClient = new QueryClient();
@@ -19,12 +19,11 @@ class ProductCard extends Component {
     try {
       const result = await queryClient.fetchQuery(
         ["fetchAttributes", productId],
-        () => GetQuickShop.getQuickShop(productId)
+        () => GetQuickShopService.getQuickShop(productId)
       );
       return result;
     } catch (err) {
-      console.log("ERORIA");
-      throw new Error("ERORIA AKANE", err);
+      throw new Error("error", err);
     }
   };
 
@@ -35,9 +34,7 @@ class ProductCard extends Component {
     const data = await this.fetchAttributesQuickShop(id);
     const defaultAttributes = {};
     const attributes = data.attributes;
-    // const price = data.price
 
-    // Populate defaultAttributes with full object structure for each attribute item
     attributes.forEach((attribute) => {
       if (attribute.items && attribute.items.length > 0) {
         defaultAttributes[attribute.name] = {
@@ -46,11 +43,6 @@ class ProductCard extends Component {
         };
       }
     });
-
-    console.log(price);
-
-    // const productInCart = cart.find((item) => item.id === id);
-    // const price = productInCart?.price || 0;
 
     const normalizedPrice =
       typeof price === "object"
@@ -63,14 +55,13 @@ class ProductCard extends Component {
 
     addToCart({
       attributes: attributes,
-      id: id, // Assuming `id` represents your product here
+      id: id,
       selectedAttributes: defaultAttributes,
       name: name,
       image: image,
       quantity: quantity,
       price: normalizedPrice,
     });
-    // toggleCart()
     console.log("Added product with default attributes to cart");
   };
 
@@ -119,7 +110,6 @@ class ProductCard extends Component {
   }
 }
 
-// Custom HOC to use `useNavigate` with class component
 function withNavigate(Component) {
   return function WrapperComponent(props) {
     const navigate = useNavigate();

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import GetPDP from "../../hooks/getPDP";
+import GetPDPService from "../../services/GetPDPService";
 import { QueryClient } from "react-query";
 import vector from "../../assets/png/Vector.png";
 import { withCart } from "../../context/cartContext";
@@ -28,7 +28,7 @@ class ProductDetailPage extends Component {
     const productID = urlParts[urlParts.length - 1];
     try {
       const result = await queryClient.fetchQuery("PDP", () =>
-        GetPDP.getPDP(productID)
+        GetPDPService.getPDP(productID)
       );
       const PDPResult = result.PDP;
       this.setState({ PDPDetails: PDPResult });
@@ -89,7 +89,7 @@ class ProductDetailPage extends Component {
     const { PDPDetails, selectedAttributes, currentImageIndex } = this.state;
 
     return (
-      <div className="container mx-auto py-10 px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row gap-8">
+      <div className="container mx-auto py-10 px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row gap-8" data-testid="product-details-container">
         {/* Gallery */}
         <div className="lg:w-1/2 flex gap-4" data-testid="product-gallery">
           <div className="flex flex-col gap-4 max-h-96 overflow-y-auto">
@@ -152,8 +152,8 @@ class ProductDetailPage extends Component {
           <h1 className="text-2xl md:text-3xl font-bold">{PDPDetails.name}</h1>
 
           {/* Attribute Containers */}
-          {PDPDetails.attributes &&
-            PDPDetails.attributes.map((attribute) => (
+          {PDPDetails?.attributes &&
+            PDPDetails?.attributes?.map((attribute) => (
               <div
                 key={attribute.name}
                 className="mt-6"
@@ -164,6 +164,9 @@ class ProductDetailPage extends Component {
                 <h4 className="font-semibold tracking-wide">
                   {attribute.name.toUpperCase()}:
                 </h4>
+
+
+
                 <div className="flex gap-2 mt-2">
                   {attribute.items.map((item) => (
                     <button
@@ -188,6 +191,13 @@ class ProductDetailPage extends Component {
                                 :'1px solid gray'
                             }
                           : {}
+                      }
+                      data-testid={
+                        
+                           `product-attribute-${attribute.name
+                        .replace(/\s+/g, "-")
+                        .toLowerCase()}-${item.value}`
+                          
                       }
                     >
                       {attribute.name === "Color" ? "" : item.value}

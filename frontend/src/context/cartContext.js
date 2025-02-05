@@ -1,8 +1,6 @@
-import { Component, createContext, useContext, } from "react"
+import { Component, createContext, } from "react"
 
 const CartContext = createContext()
-
-export const useCart = () => useContext(CartContext)
 
 export class CartProvider extends Component {
     constructor(props) {
@@ -33,12 +31,10 @@ export class CartProvider extends Component {
                     item.id === product.id &&
                     JSON.stringify(item.selectedAttributes) === JSON.stringify(product.selectedAttributes)
             )
-            // console.log("[ITEM INDEX]", existingItemIndex)
 
             if (existingItemIndex > -1) {
                 const updatedCart = [...prevState.cart]
                 updatedCart[existingItemIndex].quantity += 1
-                // console.log("adding to qquantity", updatedCart)
                 return {cart: updatedCart}
             } else {
                 return {cart: [...prevState.cart, {...product, price: normalizedPrice ,quantity: 1}]}

@@ -1,4 +1,4 @@
-import GraphQLService from "../services/GraphQLService"
+import GraphQLService from "./GraphQLService"
 import { gql } from "graphql-request"
 
 class CategoryService {
@@ -15,7 +15,6 @@ class CategoryService {
             const response = await GraphQLService.request(query)
             return response.categories
         } catch (err ) {
-            console.log("GRAPHQL ERROR GETCHING",err)
             throw err
         }
     }

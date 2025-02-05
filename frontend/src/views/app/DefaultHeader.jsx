@@ -4,7 +4,7 @@ import CompanyLogo from "../../assets/svg/companyLogo";
 import CartIcon from "../../assets/svg/cartIcon";
 import Modal from "../components/cartListItems/cartListModal";
 import { QueryClient } from "react-query";
-import CategoryService from "../../hooks/getCategories";
+import CategoryService from "../../services/CategoryService";
 import { withCart } from "../../context/cartContext";
 
 const queryClient = new QueryClient();
@@ -47,7 +47,6 @@ class DefaultHeader extends Component {
       const categories = await queryClient.fetchQuery("categories", () => CategoryService.getCategories());
       this.setState({ categories }, this.updateUnderline);
     } catch (err) {
-      console.log(err);
       throw err;
     }
   };
@@ -139,6 +138,7 @@ class DefaultHeader extends Component {
                       top: "78px",
                       height: `calc(100vh - 78px)`
                     }}
+                    data-testid="cart-overlay"
                     onClick={this.handleOverlayClick}
                   ></div>
                   <Modal isOpen={isCartOpen} cart={cart} />

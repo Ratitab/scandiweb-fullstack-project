@@ -1,7 +1,7 @@
 import { React, Component } from "react";
 import CartItem from "./cartItem";
 import { withCart } from "../../../context/cartContext";
-import PlaceOrder from "../../../hooks/placeOrderMutation";
+import PlaceOrderService from "../../../services/PlaceOrderService";
 
 class Modal extends Component {
   handlePlaceOrder = async () => {
@@ -20,7 +20,7 @@ class Modal extends Component {
     };
 
     try {
-      const result = await PlaceOrder.placeOrder(mutationVariables);
+      const result = await PlaceOrderService.placeOrder(mutationVariables);
       alert(result.message);
       clearCart();
     } catch (err) {
@@ -44,7 +44,7 @@ class Modal extends Component {
 
     return (
       <div
-        className="absolute top-full mt-5 md:right-10 z-20 bg-white p-4 md:p-6 w-80 md:w-96 max-h-[75vh] overflow-y-scroll shadow-lg "
+        className="absolute top-full right-0 mt-5 z-20 bg-white p-4 md:p-6 w-96 md:w-96 h-[calc(100vh-78px)] md:h-auto overflow-y-auto shadow-lg "
       >
         <div>
           <strong className="font-bold">My Bag</strong>, {cart.length}{" "}

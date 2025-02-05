@@ -1,5 +1,5 @@
 import { gql } from "graphql-request";
-import graphqlServiceInstance from "../services/GraphQLService";
+import graphqlServiceInstance from "./GraphQLService";
 
 class GetMainProductsService {
     static async getMainProducts() {
@@ -22,7 +22,6 @@ class GetMainProductsService {
             
             return response
         } catch (err) {
-            console.log("MAINPRODUCT RESPONSE RAW ERROR: ",err)
             throw err
         }
 

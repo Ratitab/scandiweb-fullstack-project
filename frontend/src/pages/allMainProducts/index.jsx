@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import ProductCard from "../../views/components/productCard";
 import { QueryClient } from "react-query";
-import GetMainProductsService from "../../hooks/getMainProducts";
+import GetMainProductsService from "../../services/GetMainProductsService";
 
 const queryClient = new QueryClient();
 

@@ -1,7 +1,7 @@
 import { gql } from "graphql-request";
-import graphqlServiceInstance from "../services/GraphQLService";
+import graphqlServiceInstance from "./GraphQLService";
 
-class GetPDP {
+class GetPDPService {
     static async getPDP(id) {
         const query = gql`
         query GetPDP($id: String!) {
@@ -37,10 +37,9 @@ class GetPDP {
         
         return response
     } catch (err) {
-        console.log("MAINPRODUCT RESPONSE RAW ERROR: ",err)
         throw err
     }
     }
 }
 
-export default GetPDP
+export default GetPDPService

@@ -1,9 +1,8 @@
 import { gql } from "graphql-request";
-import graphqlServiceInstance from "../services/GraphQLService";
+import graphqlServiceInstance from "./GraphQLService";
 
-class PlaceOrder {
+class PlaceOrderService {
   static async placeOrder(variables) {
-    // console.log("OrderPlaces succesfully", orderItems)
     const mutation = gql`
       mutation PlaceOrder($orderItems: [OrderItemInput!]!) {
         placeOrder(orderItems: $orderItems) {
@@ -14,19 +13,15 @@ class PlaceOrder {
       }
     `;
 
-
-    // const variables = {orderItems}
-
     try {
         const response = await graphqlServiceInstance.request(mutation, variables)
         return response.placeOrder
     } catch (err) {
-        console.log(err, "failed to olace oreder")
-        throw new Error("FAILLDEEE")
+        throw new Error("failed to place oreder", err)
     }
   }
 }
 
 
 
-export default PlaceOrder
+export default PlaceOrderService

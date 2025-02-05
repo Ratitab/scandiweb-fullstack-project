@@ -1,7 +1,7 @@
 import { gql } from "graphql-request";
-import graphqlServiceInstance from "../services/GraphQLService";
+import graphqlServiceInstance from "./GraphQLService";
 
-class GetQuickShop {
+class GetQuickShopService {
   static async getQuickShop(id) {
     const query = gql`
       query FetchAttributes($id: String!) {
@@ -21,10 +21,9 @@ class GetQuickShop {
       const response = await graphqlServiceInstance.request(query, variables);
       return response;
     } catch (err) {
-      console.log("MAINPRODUCT RESPONSE RAW ERROR: ", err);
       throw err;
     }
   }
 }
 
-export default GetQuickShop;
+export default GetQuickShopService;
