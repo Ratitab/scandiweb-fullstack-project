@@ -56,7 +56,6 @@ class GraphQL
 
     public function resolvePDPDetails($id) {
         try {
-            // error_log("AK raxdena");
             $data = $this->productService->fetchPDPDetails($id);
             
 
@@ -82,7 +81,6 @@ class GraphQL
                 return $product;
             }, $products);
 
-            // error_log("PRICES " . json_encode($resolvedProducts['price']));
     
             return $resolvedProducts;
         } catch (Exception $e) {
@@ -103,11 +101,8 @@ class GraphQL
     public function resolvePlaceOrder($root, $args) {
 
         try {
-            // error_log("LIJBI RESOLVERSHI SHEMOVIDES ES NABOZARI MERE SAD WAVA")
             $orderItems = $args['orderItems'];
-            // $price = $args['totalPrice'];
             $orderId = str_pad(mt_rand(0,999999), 6, '0', STR_PAD_LEFT);
-            // error_log("Received data: " . json_encode($orderItems)  );
 
             $this->productService->insertOrder($orderId,544.22, $orderItems);
             return  [
@@ -115,7 +110,6 @@ class GraphQL
                 'status' => "SUCCESS",
                 'message' => 'order placed successfully'
             ];
-            // error_log("Order placed successfully with Order ID: ARIKAAA" . $orderId);
 
     
             return ;
@@ -129,7 +123,6 @@ class GraphQL
     public function resolveFetchAttributes($id) {
         try {
             $attributes = $this->productService->resolveAttributes($id);
-            // error_log("ATTRIBUTEs" . json_encode($attributes));
             return $attributes;
         } catch (Exception $e) {
             throw new RuntimeException("Error fetching atributes" . $e->getMessage());
@@ -138,7 +131,6 @@ class GraphQL
     
 
 
-    // Ensure this method is NOT static
     public function handle()
     {
         try {
@@ -170,7 +162,7 @@ class GraphQL
                                 ],
                             ])
                         ),
-                        'resolve' => [$this, 'resolveProductDetails'], // Use instance method as resolver
+                        'resolve' => [$this, 'resolveProductDetails'],
                     ],
                     'categories' => [
                         'type' => Type::listOf(
@@ -181,12 +173,12 @@ class GraphQL
                                 ],
                             ])
                         ),
-                        'resolve' => [$this, 'resolveCategories'], // Ensure this is inside the 'categories' field
+                        'resolve' => [$this, 'resolveCategories'], 
                     ],
                     'attributes' => [
                             'type' => Type::listOf($this->attributeType),
                             'args' => [
-                                    'id' => ['type' => Type::nonNull(Type::string())], // Add `id` argument
+                                    'id' => ['type' => Type::nonNull(Type::string())], 
                                 ],
                             'resolve' => function ($root, $args) {
                                     return $this->resolveFetchAttributes($args['id']);
@@ -262,7 +254,6 @@ class GraphQL
             ]);
 
             $rawInput = file_get_contents('php://input');
-            // error_log('Raw input: ' . $rawInput);
             if ($rawInput === false) {
                 throw new RuntimeException('Failed to get php://input');
             }

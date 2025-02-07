@@ -25,12 +25,11 @@ class RouteHandler
 
     public function dispatch($method, $uri)
     {
-        header("Access-Control-Allow-Origin: *"); // Allow only this origin
-    header("Access-Control-Allow-Methods: GET, POST, OPTIONS"); // Allow specific methods
-    header("Access-Control-Allow-Headers: Content-Type, Authorization"); // Allow specific headers
-    header("Access-Control-Allow-Credentials: true"); // Allow credentials (if needed)
+        header("Access-Control-Allow-Origin: *"); 
+    header("Access-Control-Allow-Methods: GET, POST, OPTIONS"); 
+    header("Access-Control-Allow-Headers: Content-Type, Authorization");
+    header("Access-Control-Allow-Credentials: true"); 
 
-    // Handle preflight requests
     if ($method === 'OPTIONS') {
         http_response_code(200);
         exit();

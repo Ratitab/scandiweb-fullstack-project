@@ -76,7 +76,6 @@ GROUP BY
         $stmt = $this->db->prepare($query);
         $stmt->execute(['id' => $id]);
         $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        // error_log("ES ARI PDP DETAILSI" . $result);
 
         if (!$result) {
             throw new RuntimeException("no data found for provided id");
